@@ -21,7 +21,8 @@ const productSchema = mongoose.Schema({
         type: String,
     },
     category: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Category"
     },
     color: {
         type: String,
@@ -29,7 +30,16 @@ const productSchema = mongoose.Schema({
     isActive: {
         type: Boolean,
         default: true
-    }
+    },
+    website:{
+        type:String,
+    },
+    instagram:{
+        type:String,
+    },
+    youtube:{
+        type:String,
+    },
 }, { timestamps: true });
 
 

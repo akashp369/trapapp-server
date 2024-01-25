@@ -149,8 +149,8 @@ const deleteBatch = asynchandler(async (req, res) => {
 
 //create product
 const createProduct = asynchandler(async (req, res) => {
-    const { productName, productDescription, quantity, productType, category, color, batch } = req.body;
-    if (!productName || !productDescription || quantity == null || quantity == undefined || !batch) {
+    const { productName, productDescription, quantity, productType, category, color, batch, website, instagram,youtube } = req.body;
+    if (!productName || !productDescription) {
         return response.validationError(res, "Cannot create productt without proper information");
     }
     try {
@@ -167,23 +167,26 @@ const createProduct = asynchandler(async (req, res) => {
         const newProduct = new productDB({
             productName: productName,
             productDescription: productDescription,
-            quantity: parseInt(quantity),
+            // quantity: parseInt(quantity),
             productType: productType,
             category: category,
             color: color,
-            batch: batch,
-            productImage
+            // batch: batch,
+            productImage,
+            website,
+            instagram,
+            youtube
         })
         const savedProduct = await newProduct.save();
         if (!savedProduct) {
             return response.internalServerError(res, "Failed to create the product");
         }
-        const findbatch = await batchDB.findByIdAndUpdate({ _id: batch }, {
-            $push: { products: newProduct._id }
-        }, { new: true })
-        if (!findbatch) {
-            return response.internalServerError(res, "Error in creating product");
-        }
+        // const findbatch = await batchDB.findByIdAndUpdate({ _id: batch }, {
+        //     $push: { products: newProduct._id }
+        // }, { new: true })
+        // if (!findbatch) {
+        //     return response.internalServerError(res, "Error in creating product");
+        // }
         response.successResponse(res, savedProduct, 'Error in saving product');
     } catch (error) {
         console.log(error);
@@ -234,7 +237,7 @@ const updateProduct = asynchandler(async (req, res) => {
     if (!findProduct) {
         return response.notFoundError(res, "failed to find the product");
     }
-    const { productName, productDescription, quantity, productType, category, color } = req.body;
+    const { productName, productDescription, quantity, productType, category, color, website, instagram, youtube } = req.body;
     if (productName) {
         findProduct.productName = productName;
     }
@@ -252,6 +255,15 @@ const updateProduct = asynchandler(async (req, res) => {
     }
     if (color) {
         findProduct.color = color;
+    }
+    if (website) {
+        findProduct.website = website;
+    }
+    if (instagram) {
+        findProduct.instagram = instagram;
+    }
+    if (youtube) {
+        findProduct.youtube = youtube;
     }
     if(req.file){
         const uploadedFile=await cloudinary.uploader.upload(req.file.path,{
@@ -332,12 +344,12 @@ const deleteProduct = asynchandler(async (req, res) => {
     if (!deletedProduct) {
         return response.internalServerError(res, "failed to delete the product");
     }
-    const updateBatch = await batchDB.findByIdAndUpdate({ _id: deletedProduct.batch }, {
-        $pull: { products: deletedProduct._id }
-    });
-    if (!updateBatch) {
-        return response.successResponse(res, deletedProduct, "Deleted product but failed to update the batch");
-    }
+    // const updateBatch = await batchDB.findByIdAndUpdate({ _id: deletedProduct.batch }, {
+    //     $pull: { products: deletedProduct._id }
+    // });
+    // if (!updateBatch) {
+    //     return response.successResponse(res, deletedProduct, "Deleted product but failed to update the batch");
+    // }
     response.successResponse(res, deletedProduct, "Deleted product successfully");
 })
 
