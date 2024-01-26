@@ -202,7 +202,7 @@ const getProducts = asynchandler(async (req, res) => {
     if (batchId) {
         queryObj.batch = batchId;
     }
-    const findAllProducts = await productDB.find(queryObj).populate("batch");
+    const findAllProducts = await productDB.find(queryObj).populate("batch").populate("category");
     if (!findAllProducts) {
         return response.internalServerError(res, "error in fetching the products");
     }
@@ -217,7 +217,7 @@ const getSingleProduct = asynchandler(async (req, res) => {
     if (id == ":id") {
         return response.validationError(res, 'Cannot fidnn the product without id');
     }
-    const findProduct = await productDB.findById({ _id: id }).populate("batch");
+    const findProduct = await productDB.findById({ _id: id }).populate("batch").populate("category");
     if (!findProduct) {
         return response.notFoundError(res, "failed to find the product");
     }
